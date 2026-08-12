@@ -37,6 +37,7 @@
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "graphql": "^16.14.2",
+    "nestjs-cls": "^6.2.1",
     "nestjs-pino": "^4.6.1",
     "pg": "^8.23.0",
     "pino": "^10.3.1",
