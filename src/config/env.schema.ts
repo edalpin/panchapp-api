@@ -15,6 +15,10 @@ export const envSchema = z.object({
     .transform((value) => value === 'true'),
   // CORS
   CORS_ORIGIN: z.string().optional(),
+  // Auth
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
+  JWT_EXPIRES_IN: z.string().default('7d'),
+  GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

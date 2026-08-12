@@ -7,13 +7,14 @@ import { Request, Response } from 'express';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
-import { AppResolver } from './app.resolver';
+import { AuthModule } from './auth/auth.module';
 import { applyCorrelationId, resolveCorrelationId } from './common/correlation/correlation-id.util';
 import { LoggingExceptionFilter } from './common/filters/logging-exception.filter';
 import { validateEnv } from './config/env.schema';
 import { getGraphqlConfig } from './config/graphql.config';
 import { getPinoConfig } from './config/logger.config';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -41,10 +42,11 @@ import { PrismaModule } from './prisma/prisma.module';
       useFactory: getGraphqlConfig,
     }),
     PrismaModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
-    AppResolver,
     {
       provide: APP_FILTER,
       useClass: LoggingExceptionFilter,

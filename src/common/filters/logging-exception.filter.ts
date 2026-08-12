@@ -26,8 +26,10 @@ export class LoggingExceptionFilter extends BaseExceptionFilter implements Excep
     if (host.getType() === 'http') {
       const response = host.switchToHttp().getResponse<{ err?: unknown }>();
       response.err = exception;
+      super.catch(exception, host);
+      return;
     }
 
-    super.catch(exception, host);
+    throw exception;
   }
 }

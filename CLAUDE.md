@@ -26,17 +26,44 @@ Infra probes ──GET /health──► AppController (REST only)
 
 Data flow is always **Resolver → Service → PrismaService**. Never put Prisma queries in resolvers.
 
+## Logging & error handling
+
+Use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*`. Correlation IDs are attached automatically via CLS.
+
+| Layer | Responsibility |
+| ----- | -------------- |
+| **Repository services** (e.g. `UsersService`) | Thin data access — return data or `null`, let Prisma errors bubble up. Do **not** log on null returns; callers assign business meaning. |
+| **Domain services** (e.g. `AuthService`) | Business rules + structured logs when a policy rejects an action (e.g. login rejected). |
+| **Strategies / guards** (e.g. `JwtStrategy`) | Auth policy enforcement + structured logs on rejection (reason code + `userId`, never the raw token). Keep client responses generic. |
+| **Global infra** | `LoggingExceptionFilter` catches uncaught exceptions; `PrismaService` logs connection failures. |
+
+**When another module uses a shared service** (e.g. `UsersService`): the consumer interprets results and logs with its own domain context. Do not push business logging into shared data services — `null` may be normal, an error, or a security event depending on the caller.
+
 ## Module layout (mandatory)
 
-Each domain owns its GraphQL surface. Colocate resolver, service, and types:
+Each domain owns its GraphQL surface. Colocate resolver, service, and types under `src/<feature>/`.
+
+**Small modules (≤5 files):** flat at module root.
 
 ```
 src/users/
-  users.module.ts       # providers: [UsersService, UsersResolver]
+  users.module.ts
   users.service.ts
-  users.resolver.ts
-  user.object.ts        # @ObjectType()
-  create-user.input.ts  # @InputType() when adding mutations
+  graphql/
+    user.object.ts
+```
+
+**Larger modules (6+ files or multiple concerns):** keep `*.module.ts` and `*.service.ts` at root; group the rest in subfolders:
+
+```
+src/auth/
+  auth.module.ts
+  auth.service.ts
+  graphql/          # resolvers, @ObjectType, @InputType
+  guards/
+  strategies/
+  decorators/
+  types/            # internal TS types (not GraphQL schema types)
 ```
 
 Import the feature module in `AppModule`. That is the only wiring Nest needs to discover GraphQL resolvers.
@@ -47,7 +74,7 @@ Import the feature module in `AppModule`. That is the only wiring Nest needs to 
 
 - Apollo bootstrap lives in `AppModule` via `GraphQLModule.forRootAsync` + `src/config/graphql.config.ts`.
 - Schema is code-first and generated to `src/generated/schema.gql` (never hand-edit).
-- GraphQL requires at least one Query field. `AppResolver` (`_ok`) in `AppModule` is schema bootstrap only — remove it once a domain module exposes a Query.
+- GraphQL requires at least one Query field. Domain modules expose real queries (e.g. auth `me`).
 - GraphiQL + introspection: development only (`GRAPHQL_GRAPHIQL=true`, `NODE_ENV=development`).
 - Playground: `http://localhost:3000/graphql`
 

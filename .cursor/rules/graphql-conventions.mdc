@@ -8,13 +8,16 @@ alwaysApply: false
 
 ## Layout (domain-colocated, mandatory)
 
+GraphQL types and resolvers live under each feature's `graphql/` subfolder (see `nest-structure.mdc` for full module layout):
+
 ```
 src/users/
   users.module.ts
   users.service.ts
-  users.resolver.ts
-  user.object.ts
-  create-user.input.ts
+  graphql/
+    user.object.ts
+    users.resolver.ts
+    create-user.input.ts
 ```
 
 Register the resolver as a provider in the feature module and import that module from `AppModule`. Do not use a `src/graphql/` folder or `GraphqlModule`.

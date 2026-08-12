@@ -9,18 +9,40 @@ alwaysApply: false
 - One concern per module: feature modules own providers, resolvers, and services.
 - Inject `PrismaService` via `PrismaModule` — do not instantiate `PrismaClient` elsewhere.
 - Env access goes through `ConfigService<EnvConfig, true>` with `{ infer: true }`; extend `env.schema.ts` (Zod) for new vars.
-- Logging: use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*` in app code.
+- Logging: use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*` in app code. See **Logging & error handling** in `CLAUDE.md` — repository services stay silent on null returns; domain callers and auth strategies log structured rejection reasons.
 - Match existing naming: `*.module.ts`, `*.service.ts`, `*.resolver.ts`, `*.object.ts`, `*.input.ts`, `*.controller.ts` (REST only for infra).
 
-## Feature module template (mandatory)
+## Feature module layout
+
+**Small modules (≤5 files):** flat at module root, optionally `graphql/` for schema types.
 
 ```
 src/users/
-  users.module.ts       # providers: [UsersService, UsersResolver]
+  users.module.ts
   users.service.ts
-  users.resolver.ts
-  user.object.ts        # @ObjectType()
-  create-user.input.ts  # @InputType() when adding mutations
+  graphql/
+    user.object.ts
+```
+
+**Larger modules (6+ files or multiple concerns):** keep `*.module.ts` and `*.service.ts` at root; group supporting code in subfolders:
+
+| Subfolder     | Contents                              |
+| ------------- | ------------------------------------- |
+| `graphql/`    | resolvers, `@ObjectType`, `@InputType` |
+| `guards/`     | auth / role guards                    |
+| `strategies/` | Passport strategies                 |
+| `decorators/` | param decorators                      |
+| `types/`      | internal TS types                     |
+
+```
+src/auth/
+  auth.module.ts
+  auth.service.ts
+  graphql/
+  guards/
+  strategies/
+  decorators/
+  types/
 ```
 
 - Import each feature module in `AppModule` — that is the only wiring needed for GraphQL resolver discovery.
