@@ -16,7 +16,7 @@ export function validateEnv(config: Record<string, unknown>): EnvConfig {
   const result = envSchema.safeParse(config);
 
   if (!result.success) {
-    console.error('❌ Invalid environment variables:');
+    console.error('Invalid environment variables:');
     console.error(JSON.stringify(result.error.format(), null, 2));
     throw new Error('Invalid environment configuration');
   }

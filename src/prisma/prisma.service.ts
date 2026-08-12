@@ -1,9 +1,9 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { getPrismaConfig } from '../config/prisma.config';
 import { EnvConfig } from '../config/env.schema';
+import { getPrismaConfig } from '../config/prisma.config';
+import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -27,7 +27,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       );
     });
 
-    await this.$connect();
+    try {
+      await this.$connect();
+      await this.$queryRaw`SELECT 1`;
+      this.logger.info('Database connection established');
+    } catch (error) {
+      this.logger.error({ error: error as Error }, 'Failed to connect to database');
+      throw error;
+    }
   }
 
   async onModuleDestroy() {
