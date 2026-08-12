@@ -53,3 +53,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Prisma
 /src/generated/prisma
+
+# GraphQL (code-first generated schema)
+/src/generated/schema.gql

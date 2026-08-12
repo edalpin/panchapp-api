@@ -1,0 +1,68 @@
+---
+description: NestJS GraphQL code-first conventions for resolvers and types
+globs: src/**/*.{resolver,object,input}.ts
+alwaysApply: false
+---
+
+# GraphQL Conventions
+
+## Layout (domain-colocated, mandatory)
+
+```
+src/users/
+  users.module.ts
+  users.service.ts
+  users.resolver.ts
+  user.object.ts
+  create-user.input.ts
+```
+
+Register the resolver as a provider in the feature module and import that module from `AppModule`. Do not use a `src/graphql/` folder or `GraphqlModule`.
+
+## Patterns
+
+```typescript
+// ✅ Object type (colocated with feature)
+@ObjectType()
+export class User {
+  @Field(() => String)
+  id!: string;
+
+  @Field(() => String)
+  email!: string;
+}
+
+// ✅ Input type for mutations
+@InputType()
+export class CreateUserInput {
+  @Field(() => String)
+  email!: string;
+}
+
+// ✅ Thin resolver — delegates to service
+@Resolver(() => User)
+export class UsersResolver {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Query(() => User, { name: 'user', nullable: true })
+  user(@Args('id', { type: () => String }) id: string) {
+    return this.usersService.findById(id);
+  }
+
+  @Mutation(() => User, { name: 'createUser' })
+  createUser(@Args('input') input: CreateUserInput) {
+    return this.usersService.create(input);
+  }
+}
+
+// ❌ Do not put Prisma queries directly in resolvers
+```
+
+## Rules
+
+- Use explicit `name` on `@Query` / `@Mutation` when it differs from the method name.
+- Use `@Field(() => Type)` with explicit return types (avoid relying on reflection alone).
+- Schema is generated to `src/generated/schema.gql` — never commit hand edits.
+- GraphiQL / introspection: development only (see `GraphQLModule` config in `app.module.ts`).
+- For guarded resolvers later, use `GqlExecutionContext` — not Express-only guards without GraphQL adaptation.
+- Prefer `@InputType()` + `class-validator` for mutation inputs when validation is needed.

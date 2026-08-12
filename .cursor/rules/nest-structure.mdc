@@ -1,0 +1,28 @@
+---
+description: Nest module and service structure for feature code
+globs: src/**/*.ts
+alwaysApply: false
+---
+
+# Nest Feature Structure
+
+- One concern per module: feature modules own providers, resolvers, and services.
+- Inject `PrismaService` via `PrismaModule` — do not instantiate `PrismaClient` elsewhere.
+- Env access goes through `ConfigService<EnvConfig, true>` with `{ infer: true }`; extend `env.schema.ts` (Zod) for new vars.
+- Logging: use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*` in app code.
+- Match existing naming: `*.module.ts`, `*.service.ts`, `*.resolver.ts`, `*.object.ts`, `*.input.ts`, `*.controller.ts` (REST only for infra).
+
+## Feature module template (mandatory)
+
+```
+src/users/
+  users.module.ts       # providers: [UsersService, UsersResolver]
+  users.service.ts
+  users.resolver.ts
+  user.object.ts        # @ObjectType()
+  create-user.input.ts  # @InputType() when adding mutations
+```
+
+- Import each feature module in `AppModule` — that is the only wiring needed for GraphQL resolver discovery.
+- GraphQL `@ObjectType` / `@InputType` classes are plain TypeScript referenced by resolvers; do **not** register them as Nest providers.
+- Do not create `src/graphql/` or a central `GraphqlModule`.

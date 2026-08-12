@@ -11,6 +11,13 @@ async function bootstrap() {
   // Logger config
   app.useLogger(app.get(Logger));
 
+  // CORS for mobile / web clients
+  const corsOrigin = configService.get('CORS_ORIGIN', { infer: true });
+  app.enableCors({
+    origin: corsOrigin?.split(',').map((origin) => origin.trim()) ?? true,
+    credentials: true,
+  });
+
   // General config
   const port = configService.get('PORT', { infer: true });
   await app.listen(port);
