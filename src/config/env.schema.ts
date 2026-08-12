@@ -6,6 +6,8 @@ export const envSchema = z.object({
   PORT: z.coerce.number().default(3000),
   // Database
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  // Logging
+  LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
