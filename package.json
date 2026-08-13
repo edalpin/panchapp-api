@@ -5,6 +5,16 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "pnpm": ">=11"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": ">=11.0.0",
+      "onFail": "error"
+    }
+  },
   "scripts": {
     "build": "prisma generate && nest build",
     "start": "nest start",
