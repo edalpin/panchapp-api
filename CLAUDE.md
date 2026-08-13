@@ -102,7 +102,7 @@ import { User as PrismaUser } from '@/generated/prisma/client.js';
 
 - Prefer `@/` over relative paths (`../`, `./`) for anything in `src/`.
 - Keep the `.js` suffix on generated Prisma client imports (`@/generated/prisma/client.js`) — required by `module: nodenext`.
-- Production builds rewrite aliases via `tsc-alias`; dev watch resolves them at runtime via `tsconfig-paths` + `tsconfig.runtime.json`.
+- Production builds rewrite aliases via `tsc-alias`; dev watch resolves them at runtime via `scripts/register-runtime-paths.cjs` + `tsconfig.runtime.json`.
 
 ### Naming conventions
 
