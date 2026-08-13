@@ -2,7 +2,8 @@ import type { PersonalGroupBackfillReport } from '@/admin/types/backfill.types';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { GroupStatus } from '@/generated/prisma/client.js';
 import { PersonalGroupPolicyService } from '@/groups/services/personal-group-policy.service';
-import { derivePersonalGroupName, groupNameSchema } from '@/groups/validation/group-name.schema';
+import { derivePersonalGroupName } from '@/groups/utils/group-name.util';
+import { groupNameSchema } from '@/groups/validation/group-name.schema';
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 

@@ -1,5 +1,6 @@
 import { AuthModule } from '@/auth/auth.module';
-import { GroupsResolver } from '@/groups/graphql/groups.resolver';
+import { GroupsResolver } from '@/groups/graphql/groups/groups.resolver';
+import { GroupMembershipsResolver } from '@/groups/graphql/memberships/group-memberships.resolver';
 import { GroupAccessService } from '@/groups/services/group-access.service';
 import { GroupMembershipService } from '@/groups/services/group-membership.service';
 import { GroupsService } from '@/groups/services/groups.service';
@@ -8,7 +9,14 @@ import { Module } from '@nestjs/common';
 
 @Module({
   imports: [AuthModule],
-  providers: [GroupsService, GroupAccessService, GroupMembershipService, PersonalGroupPolicyService, GroupsResolver],
+  providers: [
+    GroupsService,
+    GroupAccessService,
+    GroupMembershipService,
+    PersonalGroupPolicyService,
+    GroupsResolver,
+    GroupMembershipsResolver,
+  ],
   exports: [GroupAccessService, PersonalGroupPolicyService],
 })
 export class GroupsModule {}

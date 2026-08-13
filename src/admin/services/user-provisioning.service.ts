@@ -4,7 +4,8 @@ import { PrismaService } from '@/core/prisma/prisma.service';
 import { GroupStatus } from '@/generated/prisma/client.js';
 import { PersonalGroupPolicyService } from '@/groups/services/personal-group-policy.service';
 import type { UserWithPersonalGroup } from '@/groups/types/personal-group-policy.types';
-import { derivePersonalGroupName, groupNameSchema } from '@/groups/validation/group-name.schema';
+import { derivePersonalGroupName } from '@/groups/utils/group-name.util';
+import { groupNameSchema } from '@/groups/validation/group-name.schema';
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 

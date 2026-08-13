@@ -1,0 +1,2 @@
+export const PAGINATION_DEFAULT_FIRST = 20;
+export const PAGINATION_MAX_FIRST = 100;
