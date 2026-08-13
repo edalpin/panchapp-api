@@ -6,7 +6,7 @@ alwaysApply: true
 # API Architecture
 
 - **GraphQL is the primary API** for the React Native mobile app (`POST /graphql`).
-- **REST is limited to infrastructure** (e.g. `GET /health` for probes). Do not add new business REST controllers/routes.
+- **REST is limited to infrastructure** (e.g. `GET /health` for probes) and **admin ops** in `AdminModule` (API-key-protected `POST /admin/*`). Do not add new business REST controllers/routes for the mobile app.
 - Prefer Nest **code-first** GraphQL (`@ObjectType`, `@InputType`, `@Resolver`, `@Query`, `@Mutation`).
 - Keep Prisma access in services; resolvers stay thin and call services.
 - Generated artifacts live under `src/generated/` and must not be hand-edited (`schema.gql`, Prisma client).
@@ -18,4 +18,5 @@ alwaysApply: true
 - **Do not** create a `src/graphql/` folder or a wrapper `GraphqlModule`.
 - Apollo bootstrap stays in `AppModule` via `GraphQLModule.forRootAsync` + `src/config/graphql.config.ts` only.
 - Health checks use REST only (`GET /health`). Do not add a GraphQL `health` query.
+- Admin provisioning and backfill use REST only (`POST /admin/*`) behind `X-Admin-Api-Key`; see `AdminModule`.
 - GraphQL requires ≥1 Query field. `AppResolver` (`_ok`) in `AppModule` is schema bootstrap only — not a probe endpoint; remove once a domain Query exists.

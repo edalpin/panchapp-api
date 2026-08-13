@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { Request, Response } from 'express';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { LoggerModule } from 'nestjs-pino';
+import { AdminModule } from './admin/admin.module';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { applyCorrelationId, resolveCorrelationId } from './common/correlation/correlation-id.util';
@@ -13,6 +14,7 @@ import { LoggingExceptionFilter } from './common/filters/logging-exception.filte
 import { validateEnv } from './config/env.schema';
 import { getGraphqlConfig } from './config/graphql.config';
 import { getPinoConfig } from './config/logger.config';
+import { GroupsModule } from './groups/groups.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 
@@ -44,6 +46,8 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     UsersModule,
     AuthModule,
+    GroupsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

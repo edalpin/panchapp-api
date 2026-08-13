@@ -7,8 +7,40 @@ import { join } from 'node:path';
 import { CORRELATION_ID_HEADER } from '../common/correlation/correlation-id.util';
 import { EnvConfig } from './env.schema';
 
-function toClientError(message: string, code: string): GraphQLFormattedError {
-  return { message, extensions: { code } };
+type ValidationIssue = {
+  path: string;
+  message: string;
+};
+
+function isValidationIssue(value: unknown): value is ValidationIssue {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'path' in value &&
+    typeof value.path === 'string' &&
+    'message' in value &&
+    typeof value.message === 'string'
+  );
+}
+
+function extractValidationIssues(response: string | object): ValidationIssue[] | undefined {
+  if (typeof response !== 'object' || response === null || !('issues' in response)) {
+    return undefined;
+  }
+
+  const { issues } = response;
+  if (!Array.isArray(issues) || !issues.every(isValidationIssue)) {
+    return undefined;
+  }
+
+  return issues;
+}
+
+function toClientError(message: string, code: string, issues?: ValidationIssue[]): GraphQLFormattedError {
+  return {
+    message,
+    extensions: issues ? { code, issues } : { code },
+  };
 }
 
 function resolveErrorCode(status: number, fallback?: unknown): string {
@@ -41,8 +73,17 @@ export function getGraphqlConfig(configService: ConfigService<EnvConfig, true>):
       if (original instanceof HttpException) {
         const status = original.getStatus();
         const code = resolveErrorCode(status, formattedError.extensions?.code);
-        const message = status >= 500 ? 'Internal server error' : formattedError.message;
-        return toClientError(message, code);
+        const response = original.getResponse();
+        const issues = extractValidationIssues(response);
+        const responseMessage =
+          typeof response === 'object' &&
+          response !== null &&
+          'message' in response &&
+          typeof response.message === 'string'
+            ? response.message
+            : formattedError.message;
+        const message = status >= 500 ? 'Internal server error' : responseMessage;
+        return toClientError(message, code, issues);
       }
 
       const code = formattedError.extensions?.code;

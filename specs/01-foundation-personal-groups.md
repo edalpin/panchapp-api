@@ -82,7 +82,14 @@ Minimum group output:
 
 Authenticated lookup for a group in which the caller has current membership. Returns not found for absent or inaccessible groups.
 
-No business REST endpoint is introduced.
+### Admin REST (ops only)
+
+Provisioning and backfill are exposed via `AdminModule`, not GraphQL or mobile-app REST:
+
+- `POST /admin/users` — body `{ email, name? }`. Creates a pre-registered user with personal group atomically. Returns `201` when created, `200` when the user already exists with a complete personal group.
+- `POST /admin/personal-groups/backfill` — idempotent backfill for existing users missing a personal group. Returns `200` on success, `409` when contradictory data is detected (no writes).
+
+Both routes require header `X-Admin-Api-Key` matching env `ADMIN_API_KEY`.
 
 ## Validation and failure cases
 

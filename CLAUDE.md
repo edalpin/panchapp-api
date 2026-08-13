@@ -16,6 +16,12 @@ Mobile app ──POST /graphql──► GraphQLModule (Apollo)
                               PostgreSQL
 
 Infra probes ──GET /health──► AppController (REST only)
+
+Admin ops ──POST /admin/*──► AdminController (REST, X-Admin-Api-Key)
+                                    │
+                              admin services
+                                    │
+                              PrismaService
 ```
 
 | Layer         | Responsibility                                          |
@@ -80,15 +86,16 @@ Import the feature module in `AppModule`. That is the only wiring Nest needs to 
 
 ## REST
 
-- Only infrastructure: `GET /health` on `AppController`.
-- Do not add business REST controllers or routes.
+- Infrastructure: `GET /health` on `AppController`.
+- Admin ops (not mobile-app API): `POST /admin/users`, `POST /admin/personal-groups/backfill` on `AdminController`, protected by `X-Admin-Api-Key` (`ADMIN_API_KEY` env var).
+- Do not add business REST controllers or routes for the mobile app.
 - Do not add a GraphQL `health` query — REST covers probes. `_ok` is not a health check.
 
 ## Forbidden
 
 - `src/graphql/` folder or a wrapper `GraphqlModule`
 - Central GraphQL registries that re-export domain resolvers
-- Business REST endpoints
+- Business REST endpoints for the mobile app
 - Prisma queries inside resolvers
 - Hand-editing anything under `src/generated/`
 - Instantiating `PrismaClient` outside `PrismaService`
