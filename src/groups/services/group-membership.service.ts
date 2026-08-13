@@ -1,5 +1,5 @@
+import { PrismaService } from '@/core/prisma/prisma.service';
 import { isPersonalGroup } from '@/groups/utils/group.policy';
-import { PrismaService } from '@/prisma/prisma.service';
 import { ConflictException, Injectable } from '@nestjs/common';
 
 @Injectable()

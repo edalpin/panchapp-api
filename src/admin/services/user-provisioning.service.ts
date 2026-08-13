@@ -1,10 +1,10 @@
 import type { ProvisionUserRequest } from '@/admin/http/provision-user.schema';
 import type { ProvisionedUser } from '@/admin/types/provision-user.types';
-import { derivePersonalGroupName, groupNameSchema } from '@/common/validation/group-name.schema';
+import { PrismaService } from '@/core/prisma/prisma.service';
 import { GroupStatus } from '@/generated/prisma/client.js';
 import { PersonalGroupPolicyService } from '@/groups/services/personal-group-policy.service';
 import type { UserWithPersonalGroup } from '@/groups/types/personal-group-policy.types';
-import { PrismaService } from '@/prisma/prisma.service';
+import { derivePersonalGroupName, groupNameSchema } from '@/groups/validation/group-name.schema';
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 

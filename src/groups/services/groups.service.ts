@@ -1,7 +1,7 @@
+import { PrismaService } from '@/core/prisma/prisma.service';
 import { GroupAccessService } from '@/groups/services/group-access.service';
 import { GroupView } from '@/groups/types/group-view.types';
 import { toGroupView } from '@/groups/utils/group.mapper';
-import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 

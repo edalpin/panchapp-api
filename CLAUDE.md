@@ -28,7 +28,7 @@ Admin ops ──POST /admin/*──► AdminController (REST, X-Admin-Api-Key)
 | ------------- | ------------------------------------------------------- |
 | Resolver      | Thin GraphQL adapter — map args/inputs to service calls |
 | Service       | Business logic, validation, Prisma access               |
-| PrismaService | Database client (injected from global `PrismaModule`)   |
+| PrismaService | Database client (injected from global `CoreModule`)                    |
 
 Data flow is always **Resolver → Service → PrismaService**. Never put Prisma queries in resolvers.
 
@@ -53,6 +53,7 @@ Keep only `*.module.ts` at the feature root. Group everything else by **architec
 
 | Subfolder   | Contents                                              |
 | ----------- | ----------------------------------------------------- |
+| `constants/`| pure literal values — header names, limits, magic strings |
 | `http/`     | REST controllers, Zod request schemas, HTTP response types |
 | `graphql/`  | resolvers, `@ObjectType`, `@InputType`, Zod input schemas |
 | `services/` | injectable business logic                             |
@@ -84,11 +85,19 @@ src/auth/
 
 src/admin/
   admin.module.ts
+  constants/
   http/             # controllers, request/response contracts
   services/
   guards/
   types/
 ```
+
+### Constants
+
+- **`constants/`** — pure literal values (header names, limits, magic strings). One cohesive concept per file, named `<concept>.constants.ts`.
+- Cross-cutting infra → `src/core/constants/`.
+- Domain-owned values → `src/<feature>/constants/`.
+- Utils, guards, and schemas import constants; they do not define them.
 
 ### Import paths
 
@@ -96,7 +105,7 @@ Use `@/` aliases for all imports under `src/` — configured in `tsconfig.json` 
 
 ```ts
 import { AuthService } from '@/auth/services/auth.service';
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
 import { User as PrismaUser } from '@/generated/prisma/client.js';
 ```
 
@@ -109,6 +118,7 @@ import { User as PrismaUser } from '@/generated/prisma/client.js';
 - GraphQL files: `<concept>.<role>.ts` (e.g. `login-with-google.input.ts`, `auth-payload.object.ts`). Do not create generic container files like `auth.objects.ts`.
 - HTTP files: `<concept>.schema.ts` (Zod), `<concept>.response.ts` (response shape).
 - Utils files: `<concept>.<role>.ts` in `utils/` (e.g. `group.mapper.ts`, `group.policy.ts`).
+- Constants files: `<concept>.constants.ts` in `constants/` (e.g. `http-headers.constants.ts`).
 - Internal types: one cohesive concept per file in `types/`.
 - When a capability grows, split by subfolder (e.g. `graphql/sessions/`), not by artifact kind.
 
@@ -122,9 +132,25 @@ Import the feature module in `AppModule`. That is the only wiring Nest needs to 
 
 `@ObjectType` / `@InputType` classes are plain TypeScript — reference them from resolvers; do **not** register them as Nest providers.
 
+## Core module
+
+Cross-cutting infrastructure lives in `src/core/` and is wired once via global `CoreModule`:
+
+```
+src/core/
+  core.module.ts       # Config, CLS, Logger, GraphQL, Prisma, APP_FILTER
+  config/              # env schema + factory configs (graphql, logger, jwt, prisma)
+  prisma/              # PrismaService
+  correlation/         # correlation ID utilities
+  filters/             # global exception filter
+  validation/          # generic parseInput helper (Zod → BadRequestException)
+```
+
+`AppModule` imports `CoreModule` plus domain feature modules only. Domain-specific validation (e.g. group naming) belongs under the owning feature (`src/groups/validation/`), not in core.
+
 ## GraphQL wiring
 
-- Apollo bootstrap lives in `AppModule` via `GraphQLModule.forRootAsync` + `src/config/graphql.config.ts`.
+- Apollo bootstrap lives in `CoreModule` via `GraphQLModule.forRootAsync` + `src/core/config/graphql.config.ts`.
 - Schema is code-first and generated to `src/generated/schema.gql` (never hand-edit).
 - GraphQL requires at least one Query field. Domain modules expose real queries (e.g. auth `me`).
 - GraphiQL + introspection: development only (`GRAPHQL_GRAPHIQL=true`, `NODE_ENV=development`).

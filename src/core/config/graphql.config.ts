@@ -1,5 +1,6 @@
-import { CORRELATION_ID_HEADER } from '@/common/correlation/correlation-id.util';
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
+import { GraphqlErrorCode } from '@/core/constants/graphql-error-codes.constants';
+import { CORRELATION_ID_HEADER } from '@/core/constants/http-headers.constants';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -44,12 +45,12 @@ function toClientError(message: string, code: string, issues?: ValidationIssue[]
 }
 
 function resolveErrorCode(status: number, fallback?: unknown): string {
-  if (status === 401) return 'UNAUTHENTICATED';
-  if (status === 403) return 'FORBIDDEN';
-  if (status === 404) return 'NOT_FOUND';
-  if (status === 400) return 'BAD_REQUEST';
+  if (status === 401) return GraphqlErrorCode.UNAUTHENTICATED;
+  if (status === 403) return GraphqlErrorCode.FORBIDDEN;
+  if (status === 404) return GraphqlErrorCode.NOT_FOUND;
+  if (status === 400) return GraphqlErrorCode.BAD_REQUEST;
   if (typeof fallback === 'string') return fallback;
-  return status >= 500 ? 'INTERNAL_SERVER_ERROR' : 'BAD_REQUEST';
+  return status >= 500 ? GraphqlErrorCode.INTERNAL_SERVER_ERROR : GraphqlErrorCode.BAD_REQUEST;
 }
 
 export function getGraphqlConfig(configService: ConfigService<EnvConfig, true>): ApolloDriverConfig {
@@ -87,11 +88,11 @@ export function getGraphqlConfig(configService: ConfigService<EnvConfig, true>):
       }
 
       const code = formattedError.extensions?.code;
-      if (typeof code === 'string' && code !== 'INTERNAL_SERVER_ERROR') {
+      if (typeof code === 'string' && code !== GraphqlErrorCode.INTERNAL_SERVER_ERROR) {
         return formattedError;
       }
 
-      return toClientError('Internal server error', 'INTERNAL_SERVER_ERROR');
+      return toClientError('Internal server error', GraphqlErrorCode.INTERNAL_SERVER_ERROR);
     },
   };
 }

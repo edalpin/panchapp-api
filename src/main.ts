@@ -1,6 +1,6 @@
 import { AppModule } from '@/app.module';
-import { CORRELATION_ID_RESPONSE_HEADER } from '@/common/correlation/correlation-id.util';
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
+import { CORRELATION_ID_RESPONSE_HEADER } from '@/core/constants/http-headers.constants';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';

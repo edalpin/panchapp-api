@@ -5,7 +5,7 @@ import { loginWithGoogleSchema } from '@/auth/graphql/login-with-google.schema';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { AuthService } from '@/auth/services/auth.service';
 import type { AuthenticatedUser } from '@/auth/types/jwt.types';
-import { parseInput } from '@/common/validation/parse-input';
+import { parseInput } from '@/core/validation/parse-input';
 import { User } from '@/users/graphql/user.object';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';

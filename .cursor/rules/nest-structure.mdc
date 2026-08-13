@@ -7,8 +7,8 @@ alwaysApply: false
 # Nest Feature Structure
 
 - One concern per module: feature modules own providers, resolvers, and services.
-- Inject `PrismaService` via `PrismaModule` — do not instantiate `PrismaClient` elsewhere.
-- Env access goes through `ConfigService<EnvConfig, true>` with `{ infer: true }`; extend `env.schema.ts` (Zod) for new vars.
+- Inject `PrismaService` from `@/core/prisma/prisma.service` — do not instantiate `PrismaClient` elsewhere.
+- Env access goes through `ConfigService<EnvConfig, true>` with `{ infer: true }`; extend `src/core/config/env.schema.ts` (Zod) for new vars.
 - Logging: use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*` in app code. See **Logging & error handling** in `CLAUDE.md` — repository services stay silent on null returns; domain callers and auth strategies log structured rejection reasons.
 - Match existing naming: `*.module.ts`, `*.service.ts`, `*.resolver.ts`, `*.object.ts`, `*.input.ts`, `*.controller.ts` (REST only for infra).
 - Import from `@/` aliases for anything under `src/` (e.g. `@/auth/services/auth.service`), not relative `../` paths.
@@ -19,6 +19,7 @@ Keep only `*.module.ts` at the feature root. Group everything else by **architec
 
 | Subfolder     | Contents                                                   |
 | ------------- | ---------------------------------------------------------- |
+| `constants/`  | pure literal values — header names, limits, magic strings (`<concept>.constants.ts`) |
 | `http/`       | REST controllers, Zod request schemas, HTTP response types |
 | `graphql/`    | resolvers, `@ObjectType`, `@InputType`, Zod input schemas  |
 | `services/`   | injectable business logic (`*.service.ts`)                 |
@@ -52,11 +53,20 @@ src/auth/
 
 src/admin/
   admin.module.ts
+  constants/
   http/
   services/
   guards/
   types/
 ```
+
+## Constants
+
+- **`constants/`** — pure literal values (header names, limits, magic strings). One cohesive concept per file, named `<concept>.constants.ts`.
+- Cross-cutting infra → `src/core/constants/`.
+- Domain-owned values → `src/<feature>/constants/`.
+- Utils, guards, and schemas import constants; they do not define them.
+- Zod schemas, decorators, and env schemas stay where they are — only extract literal constants, not schema objects.
 
 ## Type and schema ownership
 

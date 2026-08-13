@@ -1,7 +1,7 @@
 import { AuthResult } from '@/auth/types/auth-result.types';
 import { GoogleTokenPayload } from '@/auth/types/google-auth.types';
 import { AuthenticatedUser } from '@/auth/types/jwt.types';
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
 import { User as PrismaUser, UserStatus } from '@/generated/prisma/client.js';
 import { UsersService } from '@/users/services/users.service';
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';

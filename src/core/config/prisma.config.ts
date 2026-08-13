@@ -1,4 +1,4 @@
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
 import { Prisma } from '@/generated/prisma/client.js';
 import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';

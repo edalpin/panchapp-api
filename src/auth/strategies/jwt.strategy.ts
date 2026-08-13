@@ -1,5 +1,5 @@
 import { AuthenticatedUser, JwtPayload } from '@/auth/types/jwt.types';
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
 import { UserStatus } from '@/generated/prisma/client.js';
 import { UsersService } from '@/users/services/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';

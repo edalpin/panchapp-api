@@ -1,9 +1,10 @@
+import {
+  CORRELATION_ID_HEADER,
+  CORRELATION_ID_RESPONSE_HEADER,
+  REQUEST_ID_HEADER,
+} from '@/core/constants/http-headers.constants';
 import { randomUUID } from 'node:crypto';
 import { IncomingMessage, ServerResponse } from 'node:http';
-
-export const CORRELATION_ID_HEADER = 'x-correlation-id';
-export const REQUEST_ID_HEADER = 'x-request-id';
-export const CORRELATION_ID_RESPONSE_HEADER = 'X-Correlation-ID';
 
 function readHeader(req: IncomingMessage, name: string): string | undefined {
   const value = req.headers[name];

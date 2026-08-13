@@ -1,6 +1,6 @@
+import { PrismaService } from '@/core/prisma/prisma.service';
 import { GroupView } from '@/groups/types/group-view.types';
 import { toGroupView } from '@/groups/utils/group.mapper';
-import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()

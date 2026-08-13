@@ -1,11 +1,10 @@
-import { EnvConfig } from '@/config/env.schema';
+import { ADMIN_API_KEY_HEADER } from '@/admin/constants/http-headers.constants';
+import { EnvConfig } from '@/core/config/env.schema';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { createHash, timingSafeEqual } from 'node:crypto';
-
-const ADMIN_API_KEY_HEADER = 'x-admin-api-key';
 
 @Injectable()
 export class AdminApiKeyGuard implements CanActivate {

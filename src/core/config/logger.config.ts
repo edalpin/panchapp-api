@@ -1,4 +1,5 @@
-import { EnvConfig } from '@/config/env.schema';
+import { EnvConfig } from '@/core/config/env.schema';
+import { CORRELATION_ID_CLS_KEY } from '@/core/constants/cls.constants';
 import { ConfigService } from '@nestjs/config';
 import { ClsService } from 'nestjs-cls';
 import { Params } from 'nestjs-pino';
@@ -11,9 +12,9 @@ export function getPinoConfig(configService: ConfigService<EnvConfig, true>, cls
   return {
     pinoHttp: {
       level: logLevel,
-      genReqId: () => cls.get('correlationId') ?? randomUUID(),
+      genReqId: () => cls.get(CORRELATION_ID_CLS_KEY) ?? randomUUID(),
       mixin: () => {
-        const correlationId = cls.get<string>('correlationId');
+        const correlationId = cls.get<string>(CORRELATION_ID_CLS_KEY);
         return correlationId ? { correlationId } : {};
       },
       customProps: (req) => ({ correlationId: req.id }),
