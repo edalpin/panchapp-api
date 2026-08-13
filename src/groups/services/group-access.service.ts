@@ -1,7 +1,7 @@
+import { GroupView } from '@/groups/types/group-view.types';
+import { toGroupView } from '@/groups/utils/group.mapper';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { GroupView } from '../types/group-view.types';
-import { toGroupView } from '../utils/group.mapper';
 
 @Injectable()
 export class GroupAccessService {

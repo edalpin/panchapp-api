@@ -1,14 +1,14 @@
+import { AuthResolver } from '@/auth/graphql/auth.resolver';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { AuthService } from '@/auth/services/auth.service';
+import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
+import { EnvConfig } from '@/config/env.schema';
+import { getJwtConfig } from '@/config/jwt.config';
+import { UsersModule } from '@/users/users.module';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { EnvConfig } from '../config/env.schema';
-import { getJwtConfig } from '../config/jwt.config';
-import { UsersModule } from '../users/users.module';
-import { AuthResolver } from './graphql/auth.resolver';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { AuthService } from './services/auth.service';
-import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [

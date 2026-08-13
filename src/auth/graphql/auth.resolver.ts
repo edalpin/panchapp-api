@@ -1,14 +1,14 @@
+import { CurrentUser } from '@/auth/decorators/current-user.decorator';
+import { AuthPayload } from '@/auth/graphql/auth-payload.object';
+import { LoginWithGoogleInput } from '@/auth/graphql/login-with-google.input';
+import { loginWithGoogleSchema } from '@/auth/graphql/login-with-google.schema';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { AuthService } from '@/auth/services/auth.service';
+import type { AuthenticatedUser } from '@/auth/types/jwt.types';
+import { parseInput } from '@/common/validation/parse-input';
+import { User } from '@/users/graphql/user.object';
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { parseInput } from '../../common/validation/parse-input';
-import { User } from '../../users/graphql/user.object';
-import { CurrentUser } from '../decorators/current-user.decorator';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { AuthService } from '../services/auth.service';
-import type { AuthenticatedUser } from '../types/jwt.types';
-import { AuthPayload } from './auth-payload.object';
-import { LoginWithGoogleInput } from './login-with-google.input';
-import { loginWithGoogleSchema } from './login-with-google.schema';
 
 @Resolver()
 export class AuthResolver {

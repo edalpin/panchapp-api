@@ -1,7 +1,7 @@
+import { EnvConfig } from '@/config/env.schema';
+import { Prisma } from '@/generated/prisma/client.js';
 import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Prisma } from '../generated/prisma/client.js';
-import { EnvConfig } from './env.schema';
 
 export function getPrismaConfig(configService: ConfigService<EnvConfig, true>): Prisma.PrismaClientOptions {
   const isDev = configService.get('NODE_ENV', { infer: true }) === 'development';

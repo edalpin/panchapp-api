@@ -1,4 +1,4 @@
-import type { AuthenticatedUser } from './jwt.types';
+import type { AuthenticatedUser } from '@/auth/types/jwt.types';
 
 export interface AuthResult {
   accessToken: string;

@@ -16,10 +16,10 @@
     }
   },
   "scripts": {
-    "build": "prisma generate && nest build",
+    "build": "prisma generate && nest build && tsc-alias -p tsconfig.build.json",
     "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:dev": "TS_NODE_PROJECT=tsconfig.runtime.json nest start --watch -e \"node -r tsconfig-paths/register\"",
+    "start:debug": "TS_NODE_PROJECT=tsconfig.runtime.json nest start --debug --watch -e \"node -r tsconfig-paths/register\"",
     "start:prod": "node dist/main",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
@@ -85,6 +85,7 @@
     "source-map-support": "^0.5.21",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"

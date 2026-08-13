@@ -1,12 +1,12 @@
+import { AdminApiKeyGuard } from '@/admin/guards/admin-api-key.guard';
+import type { PersonalGroupBackfillResponse } from '@/admin/http/backfill.response';
+import type { ProvisionUserResponse } from '@/admin/http/provision-user.response';
+import { provisionUserSchema } from '@/admin/http/provision-user.schema';
+import { PersonalGroupBackfillService } from '@/admin/services/personal-group-backfill.service';
+import { UserProvisioningService } from '@/admin/services/user-provisioning.service';
+import { parseInput } from '@/common/validation/parse-input';
 import { Body, Controller, HttpCode, HttpStatus, Post, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
-import { parseInput } from '../../common/validation/parse-input';
-import { AdminApiKeyGuard } from '../guards/admin-api-key.guard';
-import { PersonalGroupBackfillService } from '../services/personal-group-backfill.service';
-import { UserProvisioningService } from '../services/user-provisioning.service';
-import type { PersonalGroupBackfillResponse } from './backfill.response';
-import type { ProvisionUserResponse } from './provision-user.response';
-import { provisionUserSchema } from './provision-user.schema';
 
 @Controller('admin')
 @UseGuards(AdminApiKeyGuard)

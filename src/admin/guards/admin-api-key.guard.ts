@@ -1,9 +1,9 @@
+import { EnvConfig } from '@/config/env.schema';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { EnvConfig } from '../../config/env.schema';
 
 const ADMIN_API_KEY_HEADER = 'x-admin-api-key';
 

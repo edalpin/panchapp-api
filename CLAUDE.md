@@ -90,6 +90,20 @@ src/admin/
   types/
 ```
 
+### Import paths
+
+Use `@/` aliases for all imports under `src/` — configured in `tsconfig.json` as `@/*` → `src/*`.
+
+```ts
+import { AuthService } from '@/auth/services/auth.service';
+import { EnvConfig } from '@/config/env.schema';
+import { User as PrismaUser } from '@/generated/prisma/client.js';
+```
+
+- Prefer `@/` over relative paths (`../`, `./`) for anything in `src/`.
+- Keep the `.js` suffix on generated Prisma client imports (`@/generated/prisma/client.js`) — required by `module: nodenext`.
+- Production builds rewrite aliases via `tsc-alias`; dev watch resolves them at runtime via `tsconfig-paths` + `tsconfig.runtime.json`.
+
 ### Naming conventions
 
 - GraphQL files: `<concept>.<role>.ts` (e.g. `login-with-google.input.ts`, `auth-payload.object.ts`). Do not create generic container files like `auth.objects.ts`.

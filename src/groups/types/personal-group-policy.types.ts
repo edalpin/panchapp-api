@@ -2,7 +2,7 @@ import {
   Group as PrismaGroup,
   GroupMembership as PrismaGroupMembership,
   User as PrismaUser,
-} from '../../generated/prisma/client.js';
+} from '@/generated/prisma/client.js';
 
 export type UserWithPersonalGroup = PrismaUser & {
   personalGroup: (PrismaGroup & { memberships: PrismaGroupMembership[] }) | null;

@@ -1,8 +1,8 @@
+import { EnvConfig } from '@/config/env.schema';
 import { ConfigService } from '@nestjs/config';
 import { ClsService } from 'nestjs-cls';
 import { Params } from 'nestjs-pino';
 import { randomUUID } from 'node:crypto';
-import { EnvConfig } from './env.schema';
 
 export function getPinoConfig(configService: ConfigService<EnvConfig, true>, cls: ClsService): Params {
   const isDev = configService.get('NODE_ENV', { infer: true }) === 'development';

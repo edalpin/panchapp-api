@@ -1,12 +1,12 @@
+import type { ProvisionUserRequest } from '@/admin/http/provision-user.schema';
+import type { ProvisionedUser } from '@/admin/types/provision-user.types';
+import { derivePersonalGroupName, groupNameSchema } from '@/common/validation/group-name.schema';
+import { GroupStatus } from '@/generated/prisma/client.js';
+import { PersonalGroupPolicyService } from '@/groups/services/personal-group-policy.service';
+import type { UserWithPersonalGroup } from '@/groups/types/personal-group-policy.types';
+import { PrismaService } from '@/prisma/prisma.service';
 import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { derivePersonalGroupName, groupNameSchema } from '../../common/validation/group-name.schema';
-import { GroupStatus } from '../../generated/prisma/client.js';
-import { PersonalGroupPolicyService } from '../../groups/services/personal-group-policy.service';
-import type { UserWithPersonalGroup } from '../../groups/types/personal-group-policy.types';
-import { PrismaService } from '../../prisma/prisma.service';
-import type { ProvisionUserRequest } from '../http/provision-user.schema';
-import type { ProvisionedUser } from '../types/provision-user.types';
 
 @Injectable()
 export class UserProvisioningService {

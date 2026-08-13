@@ -1,6 +1,6 @@
+import { isPersonalGroup } from '@/groups/utils/group.policy';
+import { PrismaService } from '@/prisma/prisma.service';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { isPersonalGroup } from '../utils/group.policy';
 
 @Injectable()
 export class GroupMembershipService {

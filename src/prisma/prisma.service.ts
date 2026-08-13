@@ -1,9 +1,9 @@
+import { EnvConfig } from '@/config/env.schema';
+import { getPrismaConfig } from '@/config/prisma.config';
+import { Prisma, PrismaClient } from '@/generated/prisma/client.js';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { EnvConfig } from '../config/env.schema';
-import { getPrismaConfig } from '../config/prisma.config';
-import { Prisma, PrismaClient } from '../generated/prisma/client.js';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {

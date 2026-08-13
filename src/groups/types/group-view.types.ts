@@ -1,4 +1,4 @@
-import { Group as PrismaGroup } from '../../generated/prisma/client.js';
+import { Group as PrismaGroup } from '@/generated/prisma/client.js';
 
 export type GroupView = {
   id: string;

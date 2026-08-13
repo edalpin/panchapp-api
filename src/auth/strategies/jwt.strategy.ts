@@ -1,12 +1,12 @@
+import { AuthenticatedUser, JwtPayload } from '@/auth/types/jwt.types';
+import { EnvConfig } from '@/config/env.schema';
+import { UserStatus } from '@/generated/prisma/client.js';
+import { UsersService } from '@/users/services/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { EnvConfig } from '../../config/env.schema';
-import { UserStatus } from '../../generated/prisma/client.js';
-import { UsersService } from '../../users/services/users.service';
-import { AuthenticatedUser, JwtPayload } from '../types/jwt.types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

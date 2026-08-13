@@ -1,10 +1,10 @@
+import { AuthModule } from '@/auth/auth.module';
+import { GroupsResolver } from '@/groups/graphql/groups.resolver';
+import { GroupAccessService } from '@/groups/services/group-access.service';
+import { GroupMembershipService } from '@/groups/services/group-membership.service';
+import { GroupsService } from '@/groups/services/groups.service';
+import { PersonalGroupPolicyService } from '@/groups/services/personal-group-policy.service';
 import { Module } from '@nestjs/common';
-import { AuthModule } from '../auth/auth.module';
-import { GroupsResolver } from './graphql/groups.resolver';
-import { GroupAccessService } from './services/group-access.service';
-import { GroupMembershipService } from './services/group-membership.service';
-import { GroupsService } from './services/groups.service';
-import { PersonalGroupPolicyService } from './services/personal-group-policy.service';
 
 @Module({
   imports: [AuthModule],

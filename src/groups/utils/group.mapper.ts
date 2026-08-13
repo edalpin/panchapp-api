@@ -1,7 +1,7 @@
-import { Group as PrismaGroup } from '../../generated/prisma/client.js';
-import { Group } from '../graphql/group.object';
-import { GroupView } from '../types/group-view.types';
-import { isPersonalGroup } from './group.policy';
+import { Group as PrismaGroup } from '@/generated/prisma/client.js';
+import { Group } from '@/groups/graphql/group.object';
+import { GroupView } from '@/groups/types/group-view.types';
+import { isPersonalGroup } from '@/groups/utils/group.policy';
 
 export function toGroupView(group: PrismaGroup): GroupView {
   return {

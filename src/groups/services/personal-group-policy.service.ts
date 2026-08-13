@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { GroupStatus } from '../../generated/prisma/client.js';
+import { GroupStatus } from '@/generated/prisma/client.js';
 import type {
   PersonalGroupContradiction,
   PersonalGroupState,
   UserWithPersonalGroup,
-} from '../types/personal-group-policy.types';
+} from '@/groups/types/personal-group-policy.types';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PersonalGroupPolicyService {

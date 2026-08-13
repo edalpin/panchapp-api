@@ -1,5 +1,5 @@
+import { GroupStatus } from '@/groups/graphql/group-status.enum';
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
-import { GroupStatus } from './group-status.enum';
 
 @ObjectType()
 export class Group {

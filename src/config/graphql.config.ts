@@ -1,11 +1,11 @@
+import { CORRELATION_ID_HEADER } from '@/common/correlation/correlation-id.util';
+import { EnvConfig } from '@/config/env.schema';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { IncomingMessage } from 'node:http';
 import { join } from 'node:path';
-import { CORRELATION_ID_HEADER } from '../common/correlation/correlation-id.util';
-import { EnvConfig } from './env.schema';
 
 type ValidationIssue = {
   path: string;

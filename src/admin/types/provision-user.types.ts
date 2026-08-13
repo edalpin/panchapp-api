@@ -1,4 +1,4 @@
-import { User as PrismaUser } from '../../generated/prisma/client.js';
+import { User as PrismaUser } from '@/generated/prisma/client.js';
 
 export type ProvisionedUser = {
   user: PrismaUser;

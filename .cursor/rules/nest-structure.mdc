@@ -11,6 +11,7 @@ alwaysApply: false
 - Env access goes through `ConfigService<EnvConfig, true>` with `{ infer: true }`; extend `env.schema.ts` (Zod) for new vars.
 - Logging: use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*` in app code. See **Logging & error handling** in `CLAUDE.md` — repository services stay silent on null returns; domain callers and auth strategies log structured rejection reasons.
 - Match existing naming: `*.module.ts`, `*.service.ts`, `*.resolver.ts`, `*.object.ts`, `*.input.ts`, `*.controller.ts` (REST only for infra).
+- Import from `@/` aliases for anything under `src/` (e.g. `@/auth/services/auth.service`), not relative `../` paths.
 
 ## Feature module layout
 
