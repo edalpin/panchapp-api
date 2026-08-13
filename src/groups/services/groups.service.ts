@@ -1,36 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { PrismaService } from '../prisma/prisma.service';
-import { GroupView, toGroupView } from './types/group.types';
-
-@Injectable()
-export class GroupAccessService {
-  constructor(
-    private readonly prisma: PrismaService,
-    @InjectPinoLogger(GroupAccessService.name)
-    private readonly logger: PinoLogger,
-  ) {}
-
-  async requireMembership(groupId: string, userId: string): Promise<GroupView> {
-    const membership = await this.prisma.groupMembership.findUnique({
-      where: {
-        groupId_userId: {
-          groupId,
-          userId,
-        },
-      },
-      include: {
-        group: true,
-      },
-    });
-
-    if (!membership) {
-      throw new NotFoundException('Group not found');
-    }
-
-    return toGroupView(membership.group);
-  }
-}
+import { PrismaService } from '../../prisma/prisma.service';
+import { GroupView } from '../types/group-view.types';
+import { toGroupView } from '../utils/group.mapper';
+import { GroupAccessService } from './group-access.service';
 
 @Injectable()
 export class GroupsService {

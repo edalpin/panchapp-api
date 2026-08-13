@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { derivePersonalGroupName, groupNameSchema } from '../common/validation/group-name.schema';
-import { GroupStatus } from '../generated/prisma/client.js';
-import { PrismaService } from '../prisma/prisma.service';
-import type { PersonalGroupBackfillReport } from './types/provisioning.types';
-import { UserProvisioningService } from './user-provisioning.service';
+import { derivePersonalGroupName, groupNameSchema } from '../../common/validation/group-name.schema';
+import { GroupStatus } from '../../generated/prisma/client.js';
+import { PersonalGroupPolicyService } from '../../groups/services/personal-group-policy.service';
+import { PrismaService } from '../../prisma/prisma.service';
+import type { PersonalGroupBackfillReport } from '../types/backfill.types';
 
 @Injectable()
 export class PersonalGroupBackfillService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userProvisioningService: UserProvisioningService,
+    private readonly personalGroupPolicyService: PersonalGroupPolicyService,
     @InjectPinoLogger(PersonalGroupBackfillService.name)
     private readonly logger: PinoLogger,
   ) {}
@@ -36,7 +36,7 @@ export class PersonalGroupBackfillService {
     const missingUsers = [];
 
     for (const user of users) {
-      const state = this.userProvisioningService.classifyPersonalGroupState(user);
+      const state = this.personalGroupPolicyService.classifyPersonalGroupState(user);
 
       if (state === 'complete') {
         report.skipped += 1;
@@ -44,7 +44,7 @@ export class PersonalGroupBackfillService {
       }
 
       if (state === 'contradictory') {
-        const contradiction = this.userProvisioningService.describePersonalGroupContradiction(user);
+        const contradiction = this.personalGroupPolicyService.describePersonalGroupContradiction(user);
         if (contradiction) {
           report.contradictions.push(contradiction);
         }

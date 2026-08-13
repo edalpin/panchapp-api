@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client } from 'google-auth-library';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { EnvConfig } from '../config/env.schema';
-import { User as PrismaUser, UserStatus } from '../generated/prisma/client.js';
-import { UsersService } from '../users/users.service';
-import { AuthResult, AuthenticatedUser, GoogleTokenPayload } from './types/auth.types';
+import { EnvConfig } from '../../config/env.schema';
+import { User as PrismaUser, UserStatus } from '../../generated/prisma/client.js';
+import { UsersService } from '../../users/services/users.service';
+import { AuthResult } from '../types/auth-result.types';
+import { GoogleTokenPayload } from '../types/google-auth.types';
+import { AuthenticatedUser } from '../types/jwt.types';
 
 @Injectable()
 export class AuthService {

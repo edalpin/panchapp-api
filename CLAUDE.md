@@ -49,7 +49,18 @@ Use `nestjs-pino` (`InjectPinoLogger` / `PinoLogger`), not `console.*`. Correlat
 
 Each domain owns its GraphQL surface. Colocate resolver, service, and types under `src/<feature>/`.
 
-**Small modules (≤5 files):** flat at module root.
+Keep only `*.module.ts` at the feature root. Group everything else by **architectural role**:
+
+| Subfolder   | Contents                                              |
+| ----------- | ----------------------------------------------------- |
+| `http/`     | REST controllers, Zod request schemas, HTTP response types |
+| `graphql/`  | resolvers, `@ObjectType`, `@InputType`, Zod input schemas |
+| `services/` | injectable business logic                             |
+| `utils/`    | pure helpers — role in filename (e.g. `*.mapper.ts`)  |
+| `guards/`   | auth / role guards                                    |
+| `types/`    | internal TS types (not transport contracts)           |
+
+**Small modules (≤5 files):** may stay flat at module root with optional `graphql/`.
 
 ```
 src/users/
@@ -59,18 +70,39 @@ src/users/
     user.object.ts
 ```
 
-**Larger modules (6+ files or multiple concerns):** keep `*.module.ts` and `*.service.ts` at root; group the rest in subfolders:
+**Larger modules (6+ files or multiple concerns):**
 
 ```
 src/auth/
   auth.module.ts
-  auth.service.ts
-  graphql/          # resolvers, @ObjectType, @InputType
+  services/
+  graphql/          # resolvers, @ObjectType, @InputType, Zod schemas
   guards/
   strategies/
   decorators/
   types/            # internal TS types (not GraphQL schema types)
+
+src/admin/
+  admin.module.ts
+  http/             # controllers, request/response contracts
+  services/
+  guards/
+  types/
 ```
+
+### Naming conventions
+
+- GraphQL files: `<concept>.<role>.ts` (e.g. `login-with-google.input.ts`, `auth-payload.object.ts`). Do not create generic container files like `auth.objects.ts`.
+- HTTP files: `<concept>.schema.ts` (Zod), `<concept>.response.ts` (response shape).
+- Utils files: `<concept>.<role>.ts` in `utils/` (e.g. `group.mapper.ts`, `group.policy.ts`).
+- Internal types: one cohesive concept per file in `types/`.
+- When a capability grows, split by subfolder (e.g. `graphql/sessions/`), not by artifact kind.
+
+### Cross-module boundaries
+
+- Export only services other modules need (e.g. `GroupAccessService`, `PersonalGroupPolicyService`).
+- Keep resolver-facing and mutation services private unless a real cross-module consumer exists.
+- Group and GroupMembership stay in one `GroupsModule` — membership is the groups authorization primitive.
 
 Import the feature module in `AppModule`. That is the only wiring Nest needs to discover GraphQL resolvers.
 

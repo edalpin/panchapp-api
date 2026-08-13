@@ -5,9 +5,9 @@ import { PassportModule } from '@nestjs/passport';
 import { EnvConfig } from '../config/env.schema';
 import { getJwtConfig } from '../config/jwt.config';
 import { UsersModule } from '../users/users.module';
-import { AuthService } from './auth.service';
 import { AuthResolver } from './graphql/auth.resolver';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({

@@ -14,7 +14,20 @@ alwaysApply: false
 
 ## Feature module layout
 
-**Small modules (≤5 files):** flat at module root, optionally `graphql/` for schema types.
+Keep only `*.module.ts` at the feature root. Group everything else by **architectural role**:
+
+| Subfolder     | Contents                                                   |
+| ------------- | ---------------------------------------------------------- |
+| `http/`       | REST controllers, Zod request schemas, HTTP response types |
+| `graphql/`    | resolvers, `@ObjectType`, `@InputType`, Zod input schemas  |
+| `services/`   | injectable business logic (`*.service.ts`)                 |
+| `utils/`      | pure helpers — role in filename (e.g. `*.mapper.ts`)       |
+| `guards/`     | auth / role guards                                         |
+| `strategies/` | Passport strategies                                        |
+| `decorators/` | param decorators                                           |
+| `types/`      | internal TS types (not transport contracts)                |
+
+**Small modules (≤5 files):** may stay flat at module root with optional `graphql/`.
 
 ```
 src/users/
@@ -24,26 +37,41 @@ src/users/
     user.object.ts
 ```
 
-**Larger modules (6+ files or multiple concerns):** keep `*.module.ts` and `*.service.ts` at root; group supporting code in subfolders:
-
-| Subfolder     | Contents                              |
-| ------------- | ------------------------------------- |
-| `graphql/`    | resolvers, `@ObjectType`, `@InputType` |
-| `guards/`     | auth / role guards                    |
-| `strategies/` | Passport strategies                 |
-| `decorators/` | param decorators                      |
-| `types/`      | internal TS types                     |
+**Larger modules (6+ files or multiple concerns):**
 
 ```
 src/auth/
   auth.module.ts
-  auth.service.ts
+  services/
   graphql/
   guards/
   strategies/
   decorators/
   types/
+
+src/admin/
+  admin.module.ts
+  http/
+  services/
+  guards/
+  types/
 ```
+
+## Type and schema ownership
+
+- **HTTP contracts** (`http/`): Zod request schemas, HTTP response types. Name as `<concept>.schema.ts`, `<concept>.response.ts`.
+- **GraphQL contracts** (`graphql/`): `@ObjectType`, `@InputType`, Zod validation schemas. Name as `<concept>.<role>.ts` (e.g. `login-with-google.input.ts`, `auth-payload.object.ts`).
+- **Internal types** (`types/`): service-layer shapes, view models, policy types. One cohesive concept per file.
+- **Utils** (`utils/`): stateless pure functions. Use the filename suffix to indicate role — e.g. `group.mapper.ts` for layer translation, `group.policy.ts` for policy checks.
+- Do **not** create generic catch-all files like `auth.objects.ts` or `auth.inputs.ts`. Split by capability when a feature grows (e.g. `graphql/sessions/`).
+- Keep tightly coupled shapes together (e.g. a backfill report and its nested item type).
+
+## Services
+
+- Put all injectable services in `services/` once a module has more than one service or exceeds the small-module threshold.
+- Export only services that other modules need. Keep resolver-facing and mutation services private unless a real cross-module consumer exists.
+
+## Module wiring
 
 - Import each feature module in `AppModule` — that is the only wiring needed for GraphQL resolver discovery.
 - GraphQL `@ObjectType` / `@InputType` classes are plain TypeScript referenced by resolvers; do **not** register them as Nest providers.

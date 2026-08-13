@@ -5,4 +5,4 @@ export const provisionUserSchema = z.object({
   name: z.string().trim().min(1).optional(),
 });
 
-export type ProvisionUserDto = z.infer<typeof provisionUserSchema>;
+export type ProvisionUserRequest = z.infer<typeof provisionUserSchema>;

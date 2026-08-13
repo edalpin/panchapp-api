@@ -13,7 +13,8 @@ GraphQL types and resolvers live under each feature's `graphql/` subfolder (see 
 ```
 src/users/
   users.module.ts
-  users.service.ts
+  services/
+    users.service.ts
   graphql/
     user.object.ts
     users.resolver.ts
@@ -21,6 +22,22 @@ src/users/
 ```
 
 Register the resolver as a provider in the feature module and import that module from `AppModule`. Do not use a `src/graphql/` folder or `GraphqlModule`.
+
+## Naming
+
+Use `<concept>.<role>.ts` — the concept answers *what*, the suffix answers *what role*:
+
+```
+graphql/
+  auth.resolver.ts
+  auth-payload.object.ts
+  login-with-google.input.ts
+  login-with-google.schema.ts
+```
+
+- Do **not** create generic container files (`auth.objects.ts`, `auth.inputs.ts`).
+- Combine tightly related definitions in one file when they form a single contract.
+- When a capability grows, split by subfolder (e.g. `graphql/sessions/`), not by artifact kind.
 
 ## Patterns
 
@@ -61,6 +78,11 @@ export class UsersResolver {
 // ❌ Do not put Prisma queries directly in resolvers
 ```
 
+## Validation
+
+- Use Zod schemas colocated in `graphql/` (e.g. `login-with-google.schema.ts`) with the shared `parseInput()` helper.
+- Keep Zod schemas next to their matching `@InputType` — they validate the same concept.
+
 ## Rules
 
 - Use explicit `name` on `@Query` / `@Mutation` when it differs from the method name.
@@ -68,4 +90,3 @@ export class UsersResolver {
 - Schema is generated to `src/generated/schema.gql` — never commit hand edits.
 - GraphiQL / introspection: development only (see `GraphQLModule` config in `app.module.ts`).
 - For guarded resolvers later, use `GqlExecutionContext` — not Express-only guards without GraphQL adaptation.
-- Prefer `@InputType()` + `class-validator` for mutation inputs when validation is needed.

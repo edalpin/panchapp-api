@@ -2,10 +2,10 @@ import { UseGuards } from '@nestjs/common';
 import { Args, ID, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import type { AuthenticatedUser } from '../../auth/types/auth.types';
-import { GroupsService } from '../groups.service';
+import type { AuthenticatedUser } from '../../auth/types/jwt.types';
+import { GroupsService } from '../services/groups.service';
+import { toGraphqlGroup } from '../utils/group.mapper';
 import './group-status.enum';
-import { toGraphqlGroup } from './group.mapper';
 import { Group } from './group.object';
 
 @Resolver(() => Group)
