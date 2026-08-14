@@ -1,6 +1,7 @@
 import type { AuthenticatedUser } from '@/auth/types/jwt.types';
 
-export interface AuthResult {
+export interface AuthSessionResult {
   accessToken: string;
+  refreshToken: string;
   user: AuthenticatedUser;
 }

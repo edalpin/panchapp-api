@@ -1,12 +1,12 @@
-import { AuthResult } from '@/auth/types/auth-result.types';
+import { AuthTokenService } from '@/auth/services/auth-token.service';
+import { AuthSessionResult } from '@/auth/types/auth-result.types';
 import { GoogleTokenPayload } from '@/auth/types/google-auth.types';
-import { AuthenticatedUser } from '@/auth/types/jwt.types';
+import { toAuthenticatedUser } from '@/auth/utils/authenticated-user.mapper';
 import { EnvConfig } from '@/core/config/env.schema';
 import { User as PrismaUser, UserStatus } from '@/generated/prisma/client.js';
 import { UsersService } from '@/users/services/users.service';
 import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client } from 'google-auth-library';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
@@ -17,7 +17,7 @@ export class AuthService {
 
   constructor(
     private readonly configService: ConfigService<EnvConfig, true>,
-    private readonly jwtService: JwtService,
+    private readonly authTokenService: AuthTokenService,
     private readonly usersService: UsersService,
     @InjectPinoLogger(AuthService.name)
     private readonly logger: PinoLogger,
@@ -30,14 +30,39 @@ export class AuthService {
     this.googleClient = new OAuth2Client();
   }
 
-  async loginWithGoogle(idToken: string): Promise<AuthResult> {
+  async loginWithGoogle(idToken: string): Promise<AuthSessionResult> {
     const googleUser = await this.verifyGoogleIdToken(idToken);
     const user = await this.resolveAllowedUser(googleUser);
-    const accessToken = await this.jwtService.signAsync({ sub: user.id });
+    return this.issueSession(user);
+  }
+
+  async refreshSession(refreshToken: string): Promise<AuthSessionResult> {
+    const payload = await this.authTokenService.verifyRefreshToken(refreshToken);
+    const user = await this.usersService.findById(payload.sub);
+
+    if (!user) {
+      this.logger.warn({ userId: payload.sub, reason: 'user_not_found' }, 'Refresh rejected');
+      throw new UnauthorizedException();
+    }
+
+    if (user.status !== UserStatus.ACTIVE) {
+      this.logger.warn({ userId: payload.sub, reason: 'user_not_active' }, 'Refresh rejected');
+      throw new UnauthorizedException();
+    }
+
+    return this.issueSession(user);
+  }
+
+  private async issueSession(user: PrismaUser): Promise<AuthSessionResult> {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.authTokenService.signAccessToken(user.id),
+      this.authTokenService.signRefreshToken(user.id),
+    ]);
 
     return {
       accessToken,
-      user: this.toAuthenticatedUser(user),
+      refreshToken,
+      user: toAuthenticatedUser(user),
     };
   }
 
@@ -105,13 +130,5 @@ export class AuthService {
     }
 
     return user;
-  }
-
-  private toAuthenticatedUser(user: PrismaUser): AuthenticatedUser {
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    };
   }
 }

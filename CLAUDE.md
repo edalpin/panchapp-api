@@ -1,11 +1,11 @@
 # Panchapp Service — Project Memory
 
-NestJS backend for the Panchapp React Native app. PostgreSQL via Prisma. GraphQL is the primary API.
+NestJS backend for the Panchapp PWA. PostgreSQL via Prisma. GraphQL is the primary API.
 
 ## Architecture
 
 ```
-Mobile app ──POST /graphql──► GraphQLModule (Apollo)
+PWA ──POST /graphql (credentials: include)──► GraphQLModule (Apollo)
                                     │
                          domain module resolvers
                                     │
@@ -156,18 +156,27 @@ src/core/
 - GraphiQL + introspection: development only (`GRAPHQL_GRAPHIQL=true`, `NODE_ENV=development`).
 - Playground: `http://localhost:3000/graphql`
 
+## Authentication (PWA)
+
+- **Cookie-based sessions** — access and refresh tokens are HttpOnly cookies (`panchapp_access_token`, `panchapp_refresh_token`). Tokens are never returned in GraphQL response bodies or `Authorization` headers.
+- **Mutations:** `loginWithGoogle`, `refreshSession`, `logout` in `AuthModule`.
+- **Protected queries:** `me` and group operations require a valid access cookie via `JwtAuthGuard`.
+- **Client config:** GraphQL requests must use `credentials: 'include'`. Production requires explicit `CORS_ORIGIN`.
+- **Cross-site deploys** (e.g. separate Railway hostnames): set `COOKIE_SAME_SITE=none`, `COOKIE_SECURE=true`, and `TRUST_PROXY=true`.
+- **Logout limitation:** stateless JWT refresh — logout clears cookies in the current browser but cannot revoke a copied refresh token before expiry.
+
 ## REST
 
 - Infrastructure: `GET /health` on `AppController`.
-- Admin ops (not mobile-app API): `POST /admin/users`, `POST /admin/personal-groups/backfill` on `AdminController`, protected by `X-Admin-Api-Key` (`ADMIN_API_KEY` env var).
-- Do not add business REST controllers or routes for the mobile app.
+- Admin ops (not PWA API): `POST /admin/users`, `POST /admin/personal-groups/backfill` on `AdminController`, protected by `X-Admin-Api-Key` (`ADMIN_API_KEY` env var).
+- Do not add business REST controllers or routes for the PWA.
 - Do not add a GraphQL `health` query — REST covers probes. `_ok` is not a health check.
 
 ## Forbidden
 
 - `src/graphql/` folder or a wrapper `GraphqlModule`
 - Central GraphQL registries that re-export domain resolvers
-- Business REST endpoints for the mobile app
+- Business REST endpoints for the PWA
 - Prisma queries inside resolvers
 - Hand-editing anything under `src/generated/`
 - Instantiating `PrismaClient` outside `PrismaService`

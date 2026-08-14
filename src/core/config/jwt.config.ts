@@ -3,10 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModuleOptions } from '@nestjs/jwt';
 
 export function getJwtConfig(configService: ConfigService<EnvConfig, true>): JwtModuleOptions {
+  const accessExpiresMs = configService.get('JWT_ACCESS_EXPIRES_MS', { infer: true });
+
   return {
-    secret: configService.get('JWT_SECRET', { infer: true }),
+    secret: configService.get('JWT_ACCESS_SECRET', { infer: true }),
     signOptions: {
-      expiresIn: configService.get('JWT_EXPIRES_IN', { infer: true }),
+      expiresIn: Math.floor(accessExpiresMs / 1000),
     },
   };
 }

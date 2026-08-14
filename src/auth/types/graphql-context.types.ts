@@ -1,8 +1,10 @@
 import type { AuthenticatedUser } from '@/auth/types/jwt.types';
-import { IncomingMessage } from 'node:http';
+import type { Request, Response } from 'express';
 
-export type AuthenticatedRequest = IncomingMessage & { user: AuthenticatedUser };
+export type AuthenticatedRequest = Request & { user: AuthenticatedUser };
 
 export type GraphqlContext = {
-  req: IncomingMessage & { user?: AuthenticatedUser };
+  req: Request;
+  res: Response;
+  correlationId?: string | string[];
 };

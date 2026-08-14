@@ -4,8 +4,8 @@ import { CORRELATION_ID_HEADER } from '@/core/constants/http-headers.constants';
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { Request, Response } from 'express';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
-import { IncomingMessage } from 'node:http';
 import { join } from 'node:path';
 
 type ValidationIssue = {
@@ -63,7 +63,8 @@ export function getGraphqlConfig(configService: ConfigService<EnvConfig, true>):
     sortSchema: true,
     graphiql: isDevelopment && graphiql,
     introspection: env !== 'production',
-    context: ({ req, res }: { req: IncomingMessage; res: unknown }) => ({
+    csrfPrevention: true,
+    context: ({ req, res }: { req: Request; res: Response }) => ({
       req,
       res,
       correlationId: req.headers[CORRELATION_ID_HEADER],

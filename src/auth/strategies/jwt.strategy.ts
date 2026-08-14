@@ -1,10 +1,13 @@
-import { AuthenticatedUser, JwtPayload } from '@/auth/types/jwt.types';
+import { AuthenticatedUser, JwtPayload, JwtTokenType } from '@/auth/types/jwt.types';
+import { readAccessTokenFromCookie } from '@/auth/utils/auth-cookie.util';
+import { toAuthenticatedUser } from '@/auth/utils/authenticated-user.mapper';
 import { EnvConfig } from '@/core/config/env.schema';
 import { UserStatus } from '@/generated/prisma/client.js';
 import { UsersService } from '@/users/services/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
@@ -17,13 +20,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly logger: PinoLogger,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([(request) => readAccessTokenFromCookie(request as Request) ?? null]),
       ignoreExpiration: false,
-      secretOrKey: configService.get('JWT_SECRET', { infer: true }),
+      secretOrKey: configService.get('JWT_ACCESS_SECRET', { infer: true }),
     });
   }
 
   async validate(payload: JwtPayload): Promise<AuthenticatedUser> {
+    if (payload.typ !== JwtTokenType.ACCESS) {
+      this.logger.warn({ userId: payload.sub, reason: 'invalid_token_type' }, 'JWT validation rejected');
+      throw new UnauthorizedException();
+    }
+
     const user = await this.usersService.findById(payload.sub);
 
     if (!user) {
@@ -36,10 +44,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-    };
+    return toAuthenticatedUser(user);
   }
 }
